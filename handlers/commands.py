@@ -1,20 +1,21 @@
-from aiogram.types import Message, CallbackQuery, FSInputFile
-from command_text import FAQ, TEXT_REQ
-from keyboards.admin import is_admin, kb_admin
-from aiogram import Router, F
 import os
-from dotenv import load_dotenv
-from sqlalchemy import select
-from db.models import User, ChatPrivatUser
-from db.database import async_session
 from datetime import datetime, timedelta, timezone
-from aiogram.filters import Command
-from config import CHANNEL_ID_OFFER, KANAL, PRICE_MESSAGE_ID_OFFER, config
+
+from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from keyboards.inline import confirm_keyboard  # admin_ids список айдишников админов
-from config import (
+from aiogram.types import CallbackQuery, FSInputFile, Message
+from dotenv import load_dotenv
+from sqlalchemy import select
+
+from command_text import FAQ, TEXT_REQ
+from config import CHANNEL_ID_OFFER, KANAL, PRICE_MESSAGE_ID_OFFER, config
+from core.database import async_session
+from keyboards.admin import is_admin, kb_admin
+from keyboards.inline import confirm_keyboard
+from models.models import ChatPrivatUser, User
+
     CHANNEL_ID_BARTER,
     CHANNEL_ID_CASH,
     CHANNEL_INFO_MESSAGE,
@@ -32,10 +33,9 @@ from config import (
     kb_price_text,
     kb_requis_text,
 )
+from keyboards.admin import kb_admin
 from keyboards.inline_kb import inline_create_post, inline_price
 from keyboards.kb_user import user_kb
-from keyboards.admin import kb_admin
-
 
 load_dotenv('.env')
 
@@ -122,7 +122,6 @@ async def panel_admin_out(message: Message):
 @commands.callback_query(F.data == "price_cash")
 async def price_cashback(callback: CallbackQuery):
     """При нажатии на кнопку 1 пересылает сообщение из канала с прайсом кешбека."""
-    # await price_cashback_add(callback.from_user.id)
     await callback.message.bot.forward_message(
         chat_id=callback.message.chat.id,
         from_chat_id=CHANNEL_ID_CASH,
@@ -142,7 +141,6 @@ async def price_cashback(callback: CallbackQuery):
 @commands.callback_query(F.data == "price_barter")
 async def price_barter(callback: CallbackQuery):
     """При нажатии на кнопку 2 пересылает сообщение из канала с прайсом бартера."""
-    # await price_barter_add(callback.from_user.id)
     await callback.message.bot.forward_message(
         chat_id=callback.message.chat.id,
         from_chat_id=CHANNEL_ID_BARTER,
